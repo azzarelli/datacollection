@@ -15,14 +15,20 @@ def static_to_dynamic_dataset(d_fp, v_fp, img_fp):
     assert os.path.exists(v_fp), 'Video file path does not exist'
     assert '.mp4' == v_fp[-4:], 'Need mp4' # TODO: Test on other video formats
 
-    if d_fp[-1] == '/': 
-        img_fp = d_fp+img_fp+'/'
-        tf_fp = d_fp+'transforms.json'
-    else:
-        img_fp = d_fp+'/'+img_fp+'/'
-        tf_fp = d_fp+'/transforms.json'
+    if d_fp[-1] != '/': d_fp += '/'
+    img_fp = d_fp+img_fp+'/'
+    tf_fp = d_fp+'transforms.json'
     assert os.path.exists(img_fp), 'Image folder path does not exist'
     assert os.path.exists(tf_fp), 'Could not find transforms.json'
+    
+    new_dir_fp = d_fp+'dynamic/'
+    if not os.path.exists(new_dir_fp):
+        os.makedirs(new_dir_fp)
+    else:
+        print(f'Path: {new_dir_fp} already exists! Manually delete this to overide')
+        exit()
+    
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
