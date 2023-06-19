@@ -1,6 +1,11 @@
 import argparse
 import os
-
+import cv2
+import json
+import numpy as np
+import matplotlib.pyplot as plt
+from skimage.metrics import structural_similarity as ssim
+from skimage.metrics import mean_squared_error as mse
 TEST_DFP = './data/boat_colmap/'
 TEST_VFP = './data/boat/boat.mp4'
 
@@ -24,11 +29,45 @@ def static_to_dynamic_dataset(d_fp, v_fp, img_fp):
     new_dir_fp = d_fp+'dynamic/'
     if not os.path.exists(new_dir_fp):
         os.makedirs(new_dir_fp)
-    else:
-        print(f'Path: {new_dir_fp} already exists! Manually delete this to overide')
-        exit()
+    # else:
+    #     print(f'Path: {new_dir_fp} already exists! Manually delete this to overide')
+    #     exit()
     
+    # Load transforms json
+    with open(tf_fp) as fp:
+        contents = fp.read()
+    transforms = json.loads(contents)
+    img_frames = transforms['frames']
     
+
+    #  Load video
+    video = cv2.VideoCapture(v_fp)
+    total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    for i in range(0, total_frames):
+        # TODO: Maybe we jsut nead cv2.read as we loop through all frames anyways
+        video.set(cv2.CAP_PROP_FRAME_COUNT, i)
+        ret, frame = video.read()
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        
+        
+        print(frame.shape)
+        ssims = []
+        mses = []
+        for idx, img_frame in enumerate(img_frames):
+            img_frame_fp = d_fp+img_frame['file_path']
+            image = cv2.imread(img_frame_fp, cv2.IMREAD_GRAYSCALE)
+            
+            ssims.append(ssim(image, frame))
+            mses.append(mse(image, frame)/6000.)
+
+
+        plt.figure(1)
+        plt.plot(ssims, color='b')
+        plt.plot(mses, color='r')
+        plt.show()
+            
+        print(diff)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
