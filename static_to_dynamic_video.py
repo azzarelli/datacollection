@@ -103,16 +103,16 @@ def static_to_dynamic_dataset(d_fp, v_fp, img_fp):
     val_data = sorted_data[test_index:]
     
     
-    train_file = {
-        "camera_angle_x": 0.6911112070083618,
-        "frames":[]
-    }
-
     local_properties = {
         "rotation": 0.3141592653589793,
 
     }
 
+    # Construct the training file
+    train_file = {
+        "camera_angle_x": 0.6911112070083618,
+        "frames":[]
+    }
     for data in train_data:
         time = float(data['idx'] / total_frames)
         fname = data['data']['file_path'].split('/')[-1]
@@ -128,6 +128,7 @@ def static_to_dynamic_dataset(d_fp, v_fp, img_fp):
         json.dump(train_file, fp)       
 
 
+    # Construct Testing File
     test_file = {
         "camera_angle_x": 0.6911112070083618,
         "frames":[]
@@ -146,9 +147,9 @@ def static_to_dynamic_dataset(d_fp, v_fp, img_fp):
     with open('transforms_test.json', 'w') as fp:
         json.dump(test_file, fp)   
     
-
+    # Construct Validation json
     val_file = {
-        "camera_angle_x": 0.6911112070083618,
+        "camera_angle_x": 0.6911112070083618, # TODO: find out what this means for training (check viewer)
         "frames":[]
     }
     for data in val_data:
@@ -156,7 +157,7 @@ def static_to_dynamic_dataset(d_fp, v_fp, img_fp):
         fname = data['data']['file_path'].split('/')[-1]
 
         val_file["frames"].append({
-            "file_path":f'./train/{fname}',
+            "file_path":f'./train/{fname[:-4]}',
             "rotation": local_properties['rotation'],
             "time":time,
             "transform_matrix":data['data']['transform_matrix']
