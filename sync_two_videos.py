@@ -1,6 +1,7 @@
 from tkinter import *
 from PIL import Image, ImageTk
 import cv2
+from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 
 ######### PUT THE VIDEO PATHS HERE #########
 f1 = 'data/home_toycar/c2_1.mp4'
@@ -178,21 +179,44 @@ back222.pack(side=RIGHT)
 
 
 #### Save Start Cut ####
+fps1 = vo1.get(cv2.CAP_PROP_FPS)
+fps2 = vo2.get(cv2.CAP_PROP_FPS)
+
+start1 = 0
+start2 = 0
+end = 1
+
+def final_cut(id, end):
+    if id == 1:
+        end1 = end
+        end2 = start2 + fps2 * float( float(end-start1) /fps1)
+    elif id == 1:
+        end1 = start1 + fps1 * float( float(end-start2) /fps2)
+        end2 = end
+    
+
+    ffmpeg_extract_subclip(f1, float(start1/fps1), float(start1/fps1), targetname="video1_cut.mp4")
+    ffmpeg_extract_subclip(f2, float(start2/fps2), float(start2/fps2), targetname="video2_cut.mp4")
+
 def cut_start1():
-    global count1
+    global start1
+    start1 = count1
     print(vo1.get(cv2.CAP_PROP_FPS))
+
 def cut_end1():
-    global count1
-    print(count1)
+    end = count1
+    final_cut(1, end)
 
 def cut_start2():
-    global count2
+    global start2
+    start2 = count2
     print(vo1.get(cv2.CAP_PROP_FPS))
-
 
 def cut_end2():
     global count2
-    print(count2)
+    global end
+    end = count2
+    final_cut(2, end)
 
 # Create Widget for this
 frame1_ = Frame(root)
