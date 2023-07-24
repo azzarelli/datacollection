@@ -13,7 +13,6 @@ dir = "boat/boat.mp4"
 cam = cv2.VideoCapture('./data/' + dir)
 
 try:
-	
 	# creating a folder named data
 	if not os.path.exists('data'):
 		os.makedirs('data')
@@ -32,7 +31,7 @@ while(True):
 
 	if ret:
 		# if video is still left continue creating images
-		name =   './data/'+ dir.split('/')[0]+ '/images/'+str(currentframe) + '.jpg'
+		name =   './data/'+ dir.split('/')[0] + '/images/'+str(currentframe).zfill(5) + '.jpg'
 		print ('Creating...' + name)
 
 		# writing the extracted images
