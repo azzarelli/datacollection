@@ -1,11 +1,13 @@
 from tkinter import *
 from PIL import Image, ImageTk
 import cv2
-from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
+# from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
+import os
 
 ######### PUT THE VIDEO PATHS HERE #########
-f1 = 'data/home_toycar/c2_1.mp4'
-f2 =  'data/home_toycar/c2_2.mp4'
+path = 'data/catepillar_fuzzy_table/'
+f1 = path + 'A7S2.mp4'
+f2 =  path + 'A7S3.mp4'
 
 count1 = 0 # initialise the start frame where we want to cut 
 count2 = 0
@@ -193,10 +195,25 @@ def final_cut(id, end):
     elif id == 1:
         end1 = start1 + fps1 * float( float(end-start2) /fps2)
         end2 = end
-    
 
-    ffmpeg_extract_subclip(f1, float(start1/fps1), float(start1/fps1), targetname="video1_cut.mp4")
-    ffmpeg_extract_subclip(f2, float(start2/fps2), float(start2/fps2), targetname="video2_cut.mp4")
+    # Create outputs folder if doesn't exist
+    if not os.path.exists(path+'outputs/'):
+        os.makedirs(path+'outputs/')
+    else:    # Delete already existing files
+        if os.path.exists(path + "outputs/video_1.mp4"):
+            os.remove(path + "outputs/video_1.mp4")
+        if os.path.exists(path + "outputs/video_2.mp4"):
+            os.remove(path + "outputs/video_2.mp4")
+
+    # Convert seconds to hh:mm:ss and Run FFMPEG
+    command = "ffmpeg -i " + f1 + " -vf trim=start_frame=" + str(int(start1)) + ":end_frame=" + str(int(end1)) +"+1,setpts=PTS-STARTPTS -an "+ path + "outputs/video_1.mp4"
+    os.system(command)
+    command = "ffmpeg -i " + f2 + " -vf trim=start_frame=" + str(int(start2)) + ":end_frame=" + str(int(end2)) +"+1,setpts=PTS-STARTPTS -an "+ path + "outputs/video_2.mp4"
+    os.system(command)
+
+    # Issue with audiocodec using Sony alpha camera series so not using moviepy
+    # ffmpeg_extract_subclip(f1, float(start1/fps1), float(start1/fps1), targetname="video1_cut.mp4")
+    # ffmpeg_extract_subclip(f2, float(start2/fps2), float(start2/fps2), targetname="video2_cut.mp4")
 
 def cut_start1():
     global start1
