@@ -14,7 +14,6 @@ Models:
 I took and minorly modified a script from [Geeks4Geeks](https://www.geeksforgeeks.org/extract-images-from-video-in-python/) (minor modifications) to extract images for [RoDynRF](https://github.com/facebookresearch/robust-dynrf)
 
 ## Sync-Cut Two Videos using Tk GUI
-Rudimentary implementation of a Tk GUI which allows us to select the start point (sync reference and start frame) and cut point (end frame).
 This script allow you to sync two videos by cutting each video by selecting the start frame of each video and end frame of the chosen video. Then, it cuts both videos to start at the desired frames and last the same amount of time.
 
 You can directly modify the script `sync_two_videos.py` to select a `path` to a folder containing the two videos `f1` and `f2`. 
