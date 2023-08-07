@@ -26,3 +26,8 @@ After running the script you'll be presented with a Tk GUI. Follow the steps bel
 4. `cut end` : After selecting the end frame for you chosen video, press this button to cut both videos
 5. Wait a min... (we dont copy our video as it has unsuported codec so its going to be slow)
 5. Check `$PATH/ouputs/` to see the processed videos
+
+## Rotate Static Blender Dataset
+`rotate_blender_data.py` can be used to rotate a dataset by a given angle. Currrently it is implemented to rotate datasets with `transforms_train.json, transforms_test.json, transforms_val.json` format, around the (global) z-axis.
+
+**This only works with nerfstudio conda env** and **relies on the nerfstudio BlenderDataParser**
