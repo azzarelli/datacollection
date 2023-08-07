@@ -7,7 +7,7 @@
 import cv2
 import os
 
-dir = "boat/boat.mp4"
+dir = 'cuts/video2_cut.mp4'
 
 # Read the video from specified path
 cam = cv2.VideoCapture('./data/' + dir)
@@ -31,7 +31,7 @@ while(True):
 
 	if ret:
 		# if video is still left continue creating images
-		name =   './data/'+ dir.split('/')[0] + '/images/'+str(currentframe).zfill(5) + '.jpg'
+		name =   './data/'+ dir.split('/')[0] + '/images/'+str(currentframe).zfill(4) + '.jpg'
 		print ('Creating...' + name)
 
 		# writing the extracted images
@@ -45,4 +45,4 @@ while(True):
 
 # Release all space and windows once done
 cam.release()
-cv2.destroyAllWindows()
+# cv2.destroyAllWindows()

@@ -4,8 +4,11 @@ import cv2
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 
 ######### PUT THE VIDEO PATHS HERE #########
-f1 = 'data/home_toycar/c2_1.mp4'
-f2 =  'data/home_toycar/c2_2.mp4'
+f1 = 'data/home_toycar/close_1.mp4'
+f2 =  'data/home_toycar/far_1.mp4'
+
+target_dir = 'outputs'
+
 
 count1 = 0 # initialise the start frame where we want to cut 
 count2 = 0
@@ -195,8 +198,9 @@ def final_cut(id, end):
         end2 = end
     
 
-    ffmpeg_extract_subclip(f1, float(start1/fps1), float(start1/fps1), targetname="video1_cut.mp4")
-    ffmpeg_extract_subclip(f2, float(start2/fps2), float(start2/fps2), targetname="video2_cut.mp4")
+
+    ffmpeg_extract_subclip(f1, float(start1/fps1), float(end1/fps1), targetname=target_dir+"/video1_cut.mp4")
+    ffmpeg_extract_subclip(f2, float(start2/fps2), float(end2/fps2), targetname=target_dir+"/video2_cut.mp4")
 
 def cut_start1():
     global start1
@@ -221,15 +225,15 @@ def cut_end2():
 # Create Widget for this
 frame1_ = Frame(root)
 frame1_.grid(row=3,column=0)
-cstart1 = Button(frame1_, text ="cut start", command=cut_start1)
-cend1 = Button(frame1_, text ="cut end", command=cut_end1)
+cstart1 = Button(frame1_, text ="sync start", command=cut_start1)
+cend1 = Button(frame1_, text ="sync end", command=cut_end1)
 cend1.pack(side=RIGHT)
 cstart1.pack(side=RIGHT)
 
 frame2_ = Frame(root)
 frame2_.grid(row=3,column=1)
-cstart2 = Button(frame2_, text ="cut start", command=cut_start2)
-cend2 = Button(frame2_, text ="cut end", command=cut_end2)
+cstart2 = Button(frame2_, text ="sync start", command=cut_start2)
+cend2 = Button(frame2_, text ="sync end", command=cut_end2)
 cend2.pack(side=RIGHT)
 cstart2.pack(side=RIGHT)
 
