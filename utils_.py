@@ -19,4 +19,11 @@ def folderchecks(pathlist):
 
     for path in pathlist:
         assert path.is_dir(), f'Error: {path} does not exist as a folder.'
-    
+
+import json
+
+def load_from_json(fp_data):
+    with open(fp_data) as fp:
+        contents = fp.read()
+    meta = json.loads(contents)
+    return meta
