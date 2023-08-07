@@ -10,7 +10,6 @@ import numpy as np
 # Get scene pointer
 scene = bpy.context.scene
             
-NUM_FRAMES = 251 # Number of frames to render
 MAX_FRAME = scene.frame_end # Number of total frames in our scene
 RESOLUTION = 800
 RESULTS_PATH = 'results_two_camera_test'
@@ -75,9 +74,9 @@ for j, cam in enumerate(CAMERAS):
     scene.camera = cam
     
     # Loop through the frames to render and save
-    for i in range(0, NUM_FRAMES):
+    for i in range(0, MAX_FRAME):
         # Determine the current frame and Set it
-        frame = int( (i / (NUM_FRAMES-1)) * MAX_FRAME)
+        frame = int( (i / (MAX_FRAME-1)) * MAX_FRAME)
         bpy.context.scene.frame_set(frame)
         
         print('Time:', frame, 'Cam: ', j)
