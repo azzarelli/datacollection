@@ -98,12 +98,12 @@ val_tranform = {'camera_angle_x': meta['camera_angle_x'],
                  }
 
 # Remove transforms files if they exist
-if os.path.exists(source / 'train_transforms.json'):
-    os.remove(source / 'train_transforms.json')
-if os.path.exists(source / 'test_transforms.json'):
-    os.remove(source / 'test_transforms.json')
-if os.path.exists(source / 'val_transforms.json'):
-    os.remove(source / 'val_transforms.json')
+if os.path.exists(source / 'transforms_train.json'):
+    os.remove(source / 'transforms_train.json')
+if os.path.exists(source / 'transforms_test.json'):
+    os.remove(source / 'transforms_test.json')
+if os.path.exists(source / 'transforms_val.json'):
+    os.remove(source / 'transforms_val.json')
 
 # Write the seperate transforms files
 with open(source / 'train_transforms.json', 'w') as out_file:
