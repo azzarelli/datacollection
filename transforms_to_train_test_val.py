@@ -71,7 +71,7 @@ def move_files(targ_path, frame, file_list):
        
         shutil.move(source/linked_fp_, source/targ_path/linked_fp_)
         
-    return str(fp_)
+    return str(fp_)[:-4]
 
 # Process frames for training, testing and validation
 for frame in train_frames:
@@ -106,11 +106,11 @@ if os.path.exists(source / 'transforms_val.json'):
     os.remove(source / 'transforms_val.json')
 
 # Write the seperate transforms files
-with open(source / 'train_transforms.json', 'w') as out_file:
+with open(source / 'transforms_train.json', 'w') as out_file:
     json.dump(train_tranform, out_file, indent=4)
     
-with open(source / 'test_transforms.json', 'w') as out_file:
+with open(source / 'transforms_test.json', 'w') as out_file:
     json.dump(test_tranform, out_file, indent=4)
 
-with open(source / 'val_transforms.json', 'w') as out_file:
+with open(source / 'transforms_val.json', 'w') as out_file:
     json.dump(val_tranform, out_file, indent=4)
