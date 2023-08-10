@@ -45,13 +45,14 @@ with open(source/file) as fp:
     # Ensure we have atleast one image the val folder 
     assert len(frames[test_idx:]) > 0, 'Ensure `val_split` is large enough to have atleast 1 image in dataset'
 
+    # Define our seperate dataset
     train_frames = frames[:train_idx]
     test_frames = frames[train_idx:test_idx]
     val_frames = frames[test_idx:]
 
 for frame in train_frames:
     fp_ = train_path / frame['file_path'].split('/')[-1] # append end of file path to new image path
-    
+    frame['file_path'] = fp_ # set new file path
 
 
 image_ids = []
