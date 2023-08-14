@@ -12,7 +12,7 @@ import random as rnd
 import os
 
 ##### Helper functions for later #####
-def display_views_as_cones(c2w):
+def display_views_as_cones(c2w, col=0):
     """Take a set of camera exitrinsics and display the view as a cone
 
     Args:
@@ -24,7 +24,11 @@ def display_views_as_cones(c2w):
     Notes:
         Plotting the quiver from the camera location in the direction the camera is pointing
     """
-    cl=rnd.choice(plt.colors.DEFAULT_PLOTLY_COLORS)
+    if col == 0:
+        cl=rnd.choice(plt.colors.DEFAULT_PLOTLY_COLORS)
+    else:
+        cl = plt.colors.DEFAULT_PLOTLY_COLORS[col]
+    
     # Get the location of camera origin
     loc = c2w[:, :, -1]
     cam_x = loc[:, 0]
@@ -41,7 +45,7 @@ def display_views_as_cones(c2w):
 
     return cones
 
-def write_extrinsics(c2w, source, f):
+def write_extrinsics(c2w, source, f, name='newtransforms'):
     """ Taking new extrinsics matrix replace old extrinsics (write new files)
     """
     src = source / f"transforms_{f}.json"
@@ -55,65 +59,106 @@ def write_extrinsics(c2w, source, f):
     frames_ = []
     for frame, extr in zip(frames, c2w):
         frame_ = frame.copy()
-        print(extr.shape)
         extr[-1, -1] = 1.
 
         frame_["transform_matrix"] = extr.tolist()
+        # frame_["transform_matrix"].append([0., 0., 0., 1.])
+
         frames_.append(frame_)
 
     meta['frames'] = frames_
     
-    if not os.path.isdir(source/'newtransforms/'):
-        os.mkdir(source/'newtransforms/')
+    if not os.path.isdir(source/f'{name}/'):
+        os.mkdir(source/f'{name}/')
 
     json_object = json.dumps(meta, indent=4)
-    with open(source / f"newtransforms/transforms_{f}.json", "w") as outfile:
+    with open(source / f"{name}/transforms_{f}.json", "w") as outfile:
         outfile.write(json_object)
 
 ##### Main File #####
 # Define the source of our data (i.e. where we have the transform files)
-source = Path('../data/blender_static/lego')
-file_type = ['train', 'test', 'val']
 
-for f in file_type:
-            
-    # Set-Up the data parser 
-    dataparser_config = BlenderDataParserConfig()
-    dataparser_config.data = source
-    dataparser = dataparser_config.setup()
+def main(angx, angz, angy):
+    source = Path('../data/lego_complex')
+    file_type = ['train', 'test', 'val']
+    name = f'lego_complex_pi_{angx}_{angy}_{angz}'
 
-    # Parse data (for the train file - containting two cameras)
-    dataparse_out = dataparser.get_dataparser_outputs(split=f)
-
-    # Retrive camera extrinsics
-    c2w = dataparse_out.cameras.camera_to_worlds
-
-    cones_original = display_views_as_cones(c2w)
-
-    # Transform extrinsics (Rotation around z axis)
-    ang = np.pi/4. # radians
-    rot_transform = torch.tensor([[np.cos(ang), -np.sin(ang), 0, 0],
-                                    [np.sin(ang), np.cos(ang), 0, 0],
-                                    [0, 0, 1, 0]], dtype=torch.float) # Construct rotation transform
-
-    rot_transform = rot_transform.repeat(c2w.size(0), 1, 1).transpose(1,2) # One matrix for each view
-    rotated_c2w = torch.bmm(rot_transform, c2w) # T = R_z * c2w
-
-    cones_rotated = display_views_as_cones(rotated_c2w)
-
-    # Write New extrinsics to file
-    write_extrinsics(rotated_c2w, source, f)
+    # Convert deg to radians
+    angz = angz * np.pi / 180.
+    angx = angx * np.pi / 180
+    angy = angy * np.pi / 180
 
 
-# Plot our cones + Z-Axis + World origin
-zaxis_line = go.Scatter3d(x=[0, 0, 0],y=[0,0,0],z=[-10,0, 10],line=dict(
-        color='darkblue',
-        width=2
-    ))
-fig = go.Figure(data=[cones_original, cones_rotated, zaxis_line])
-# fig.show()
+    for idx, f in enumerate(file_type):
+        # Set-Up the data parser 
+        dataparser_config = BlenderDataParserConfig()
+        dataparser_config.data = source
+        dataparser = dataparser_config.setup()
+
+        # Parse data (for the train file - containting two cameras)
+        dataparse_out = dataparser.get_dataparser_outputs(split=f)
+
+        # Retrive camera extrinsics
+        c2w = dataparse_out.cameras.camera_to_worlds
+
+        # blue cones
+        cones_original = display_views_as_cones(c2w, col=1)
+
+        # Transform extrinsics
+        Rz = torch.tensor([[np.cos(angz), -np.sin(angz), 0],
+                            [np.sin(angz), np.cos(angz), 0],
+                            [0, 0, 1]], dtype=torch.float) # Construct rotation transform
+        Rx = torch.tensor([[np.cos(angy), 0, np.sin(angy)],
+                            [0, 1, 0.],
+                            [-np.sin(angy), 0, np.cos(angy)]
+                                    ], dtype=torch.float)
+        Ry = torch.tensor([[1, 0, 0],
+                            [0, np.cos(angx), -np.sin(angx)],
+                            [0, np.sin(angx), np.cos(angx)]
+                                    ], dtype=torch.float)
+        
+        # Get world rotation
+        R = torch.mm(Ry, Rx)
+        R = torch.mm(Rz, R)
+        R = torch.cat([R.T, torch.tensor([[0., 0., 0.]], dtype=torch.float)],dim=0).T
+
+
+        R = R.repeat(c2w.size(0), 1, 1).transpose(1,2) # One matrix for each view
+
+
+        rotated_c2w = torch.bmm(R, c2w) # T = R_z * c2w
+
+        cones_rotated = display_views_as_cones(rotated_c2w, col=2)
+
+
+        # Write New extrinsics to file
+        write_extrinsics(rotated_c2w, source, f, name=name)
+
+        if idx == 0:
+            # Plot our cones + Z-Axis + World origin
+            zaxis_line = go.Scatter3d(x=[0, 0],y=[0,0],z=[-0, 5],line=dict(
+                    color='darkblue',
+                    width=2
+                ))
+            yaxis_line = go.Scatter3d(x=[0, 0],y=[0,5],z=[-0, 0],line=dict(
+                    color='red',
+                    width=2
+                ))
+            xaxis_line = go.Scatter3d(x=[0, 5],y=[0,0],z=[-0, 0],line=dict(
+                    color='green',
+                    width=2
+                ))
+
+            fig = go.Figure(data=[cones_original, cones_rotated, zaxis_line, yaxis_line, xaxis_line])
+            # fig.show()
 
 
 
+if __name__ == "__main__":
 
+    rots = [30, 60, 90]
+    for x in rots:
+        for y in rots:
+            for z in rots:
+                main(x, y, z)
 
