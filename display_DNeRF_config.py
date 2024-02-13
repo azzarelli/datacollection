@@ -86,7 +86,7 @@ def main():
             
             fig = go.Figure() #data=[cones_original, zaxis_line, yaxis_line, xaxis_line])
             fig.add_trace(cones_original)
-            # offline.plot(fig) # instead of fig.show()
+            offline.plot(fig) # instead of fig.show()
 
 
             fig.show()
