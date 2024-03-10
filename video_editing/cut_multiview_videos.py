@@ -20,14 +20,14 @@ if __name__ == "__main__":
     import os
 
     # Set your input folder containing videos
-    input_folder = "data/161029_sports1/hdVideos"
+    input_folder = "../data/plenoptic_toolbox/161029_sports1/hdVideos_old"
 
     # Set the output folder for the cut videos
-    output_folder = "data/161029_sports1/cut_videos"
+    output_folder = "../data/161029_sports1/cut_videos"
 
     # Set the start and end times in seconds
-    start_time = 95
-    end_time = 101
+    start_time = 137
+    end_time = 145
 
     # Create the output folder if it doesn't exist
     if not os.path.exists(output_folder):

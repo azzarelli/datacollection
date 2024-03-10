@@ -34,22 +34,29 @@ def display_views_as_cones(c2w, col=0):
     cam_x = loc[:, 0]
     cam_y = loc[:, 1]
     cam_z = loc[:, 2]
-
+    
     # Project Z-axis of Camera (+Z is into View) as a Cone graph object
     rot = c2w[:, :, :3]
-    back = rot[:, :, 2] # In the 3x3 rotation matrix we take the last column representing (u, v, w) for z-axis of camera
+    back = rot[:, :, 2]  # In the 3x3 rotation matrix we take the last column representing (u, v, w) for z-axis of camera
     cones = go.Cone(x=cam_x,y=cam_y,z=cam_z, 
                     u=back[:,0], v=back[:,1], w=back[:,2],
                     colorscale=[cl,cl]
                     )
-
-    return cones
+    
+    # Allows you to configure the near and far ray intrinsics
+    o = loc - .5*back
+    cones1 = go.Cone(x=o[:,0],y=o[:,1],z=o[:,2], 
+                    u=back[:,0], v=back[:,1], w=back[:,2],
+                    colorscale=['red', 'red']
+                    )
+    
+    return cones, cones1
 
 ##### Main File #####
 # Define the source of our data (i.e. where we have the transform files)
 
-def main():
-    source = Path('./data/sport_dnerf')
+def main(pth):
+    source = Path(pth)
     file_type = ['train']#, 'test', 'val']
 
     for idx, f in enumerate(file_type):
@@ -63,36 +70,21 @@ def main():
 
         # Retrive camera extrinsics
         c2w = dataparse_out.cameras.camera_to_worlds
-
         # blue cones
-        cones_original = display_views_as_cones(c2w, col=1)
+        cones_original, c1 = display_views_as_cones(c2w, col=0)
 
         if idx == 0:
-            # Plot our cones + Z-Axis + World origin
-            zaxis_line = go.Scatter3d(x=[0, 0],y=[0,0],z=[-0, 5],line=dict(
-                    color='darkblue',
-                    width=2
-                ))
-            yaxis_line = go.Scatter3d(x=[0, 0],y=[0,5],z=[-0, 0],line=dict(
-                    color='red',
-                    width=2
-                ))
-            xaxis_line = go.Scatter3d(x=[0, 5],y=[0,0],z=[-0, 0],line=dict(
-                    color='green',
-                    width=2
-                ))
-
-            from plotly import offline
-            
-            fig = go.Figure() #data=[cones_original, zaxis_line, yaxis_line, xaxis_line])
-            fig.add_trace(cones_original)
-            offline.plot(fig) # instead of fig.show()
-
-
-            fig.show()
-
-
+            return cones_original, c1
 
 if __name__ == "__main__":
-    main()
+    fig = go.Figure()
+    d1, c = main('../data/trex')
+    fig.add_trace(d1)
+
+    d2, c = main('../data/sport_dnerf')
+    fig.add_trace(d2)
+    fig.add_trace(c)
+
+    fig.show()
+
 

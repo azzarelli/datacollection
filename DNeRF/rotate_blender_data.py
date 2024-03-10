@@ -79,9 +79,9 @@ def write_extrinsics(c2w, source, f, name='newtransforms'):
 # Define the source of our data (i.e. where we have the transform files)
 
 def main(angx, angz, angy):
-    source = Path('../data/lego_complex')
+    source = Path('./data/plenoptic_toolbox/161029_sports1/dnerf/')
     file_type = ['train', 'test', 'val']
-    name = f'lego_complex_pi_{angx}_{angy}_{angz}'
+    name = f'rotated_{angx}_{angy}_{angz}'
 
     # Convert deg to radians
     angz = angz * np.pi / 180.
@@ -156,9 +156,6 @@ def main(angx, angz, angy):
 
 if __name__ == "__main__":
 
-    rots = [30, 60, 90]
-    for x in rots:
-        for y in rots:
-            for z in rots:
-                main(x, y, z)
+    rots = [90, 0, 0]
+    main(*rots)
 
