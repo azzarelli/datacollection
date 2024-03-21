@@ -21,6 +21,12 @@ I am not a software engineer so feedback/edits are very welcome :))))
 
 ## Video Editing
 
+#### `xt_from_video.py`
+Given a y-axis pixel coordinate and a range of x-axis pixel coordinates, we plot the x pixel values against time, for a video. This gives an visual sample representation of temporal smoothness.
+
+#### `mvs_image_retreival.py`
+For a given multi-view stereo dataset, we extract all images.
+
 #### `.../cut_multiview_videos.py`
 Uses [moviepy](https://pypi.org/project/moviepy/) python library to cut a set of videos (videos expected to be in-sync). Requires [ffmpeg](https://www.ffmpeg.org/download.html).
 
